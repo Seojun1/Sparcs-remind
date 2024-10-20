@@ -1,0 +1,339 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100%;
+        }
+
+        .container {
+            background-color: white;
+            width: 100%;
+            max-width: 390px;
+            height: 844px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        .back-button {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .gender-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .gender-button {
+            flex: 1;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .gender-button.selected {
+            background-color: #e8f5e9;
+            border-color: #4caf50;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+        }
+
+        .input-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .next-button {
+            width: 100%;
+            background-color: #4a7b5f;
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 18px;
+            cursor: pointer;
+            margin-top: auto;
+        }
+
+        .screen {
+            display: none;
+        }
+
+        .screen.active {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #4a7b5f;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .fade-out {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <span class="back-button">&#x2190;</span>
+            <span>회원가입/로그인</span>
+            <span></span>
+        </div>
+        <div class="content">
+            <form method="post" id="signupForm">
+                {% csrf_token %}
+                <div id="screen1" class="screen active">
+                    <h1>기본 정보를 입력해주세요.</h1>
+                    <p>성별</p>
+                    <div class="gender-buttons">
+                        <button type="button" class="gender-button" onclick="selectGender('female')">여자</button>
+                        <button type="button" class="gender-button" onclick="selectGender('male')">남자</button>
+                    </div>
+                    <input type="hidden" name="gender" id="gender">
+                    <p class="input-label">생년월일</p>
+                    <input type="text" id="birthdate" name="birthdate" placeholder="YYYY-MM-DD">
+                    <p>YYYY-MM-DD 형식으로 입력해주세요.</p>
+                </div>
+                <div id="screen2" class="screen">
+                    <h1>이름은 <br>무엇인가요?</h1><br>
+                    <input type="text" id="username" name="username" placeholder="이름을 입력해주세요.">
+                    <p>2글자 이상의 문자로 입력해주세요.</p>
+                </div>
+                <div id="screen3" class="screen">
+                    <h1>아이디와 비밀번호를 설정해주세요.</h1>
+                    <p class="input-label">아이디</p>
+                    <input type="text" id="user_id" name="user_id" placeholder="아이디를 입력해주세요.">
+                    <p>5글자 이상의 문자 또는 숫자로 입력해주세요.</p>
+                    <p class="input-label">비밀번호</p>
+                    <input type="password" id="password" name="password" placeholder="비밀번호를 입력해주세요.">
+                    <p>6글자 이상의 문자, 숫자, 특수문자 조합으로 입력해주세요.</p>
+                </div>
+                <div id="screen4" class="screen">
+                    <h1>보호자의 정보를 입력해주세요.</h1>
+                    <p class="input-label">보호자와의 관계</p>
+                    <input type="text" id="relationship" name="relationship" placeholder="부모/친척 등">
+                    <p class="input-label">보호자 이메일</p>
+                    <input type="email" id="guardianEmail" name="email" placeholder="sparcs@hackathon.ac.kr">
+                    <p>올바른 이메일 형식으로 입력해주세요.</p>
+                </div>
+                <button type="button" class="next-button" onclick="nextScreen()">다음</button>
+            </form>
+        </div>
+        <div id="successMessage" class="success-message" style="display: none;">
+            성공했습니다!
+        </div>
+        
+    </div>
+
+    <script>
+        let currentScreen = 1;
+        const totalScreens = 4;
+
+        function selectGender(gender) {
+            document.querySelectorAll('.gender-button').forEach(btn => btn.classList.remove('selected'));
+            event.target.classList.add('selected');
+            document.getElementById('gender').value = gender;
+        }
+
+        function validateScreen(screenNumber) {
+            switch (screenNumber) {
+                case 1:
+                    const gender = document.getElementById('gender').value;
+                    const birthdate = document.getElementById('birthdate').value;
+                    if (!gender) {
+                        alert('성별을 선택해주세요.');
+                        return false;
+                    }
+                    if (!/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) {
+                        alert('생년월일을 YYYY-MM-DD 형식으로 입력해주세요.');
+                        return false;
+                    }
+                    return true;
+                case 2:
+                    const username = document.getElementById('username').value;
+                    if (username.length < 2) {
+                        alert('이름은 2글자 이상이어야 합니다.');
+                        return false;
+                    }
+                    return true;
+                case 3:
+                    const userId = document.getElementById('user_id').value;
+                    const password = document.getElementById('password').value;
+                    if (userId.length < 5) {
+                        alert('아이디는 5글자 이상이어야 합니다.');
+                        return false;
+                    }
+                    if (password.length < 6 || !/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{6,}$/.test(password)) {
+                        alert('비밀번호는 6글자 이상의 문자, 숫자, 특수문자 조합이어야 합니다.');
+                        return false;
+                    }
+                    return true;
+                case 4:
+                    const email = document.getElementById('guardianEmail').value;
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                        alert('올바른 이메일 형식을 입력해주세요.');
+                        return false;
+                    }
+                    return true;
+            }
+            return true;
+        }
+
+        function nextScreen() {
+            if (validateScreen(currentScreen)) {
+                if (currentScreen < totalScreens) {
+                    document.getElementById(`screen${currentScreen}`).classList.remove('active');
+                    currentScreen++;
+                    document.getElementById(`screen${currentScreen}`).classList.add('active');
+                    if (currentScreen === totalScreens) {
+                        document.querySelector('.next-button').textContent = '가입하기';
+                    }
+                } else {
+                    document.getElementById('signupForm').submit();
+                }
+            }
+        }
+
+        document.querySelector('.back-button').addEventListener('click', () => {
+            if (currentScreen > 1) {
+                document.getElementById(`screen${currentScreen}`).classList.remove('active');
+                currentScreen--;
+                document.getElementById(`screen${currentScreen}`).classList.add('active');
+                document.querySelector('.next-button').textContent = '다음';
+            }
+        });
+
+        function nextScreen() {
+            if (validateScreen(currentScreen)) {
+                if (currentScreen < totalScreens) {
+                    document.getElementById(`screen${currentScreen}`).classList.remove('active');
+                    currentScreen++;
+                    document.getElementById(`screen${currentScreen}`).classList.add('active');
+                    if (currentScreen === totalScreens) {
+                        document.querySelector('.next-button').textContent = '가입하기';
+                    }
+                } else {
+                    // 폼 제출을 Ajax로 처리
+                    submitForm();
+                }
+            }
+        }
+
+        function submitForm() {
+            const form = document.getElementById('signupForm');
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showSuccessMessage(data.message);
+                } else {
+                    alert('회원가입 중 오류가 발생했습니다: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('회원가입 중 오류가 발생했습니다.');
+            });
+        }
+
+        function showSuccessMessage(message) {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.textContent = message || '성공했습니다!';
+            successMessage.style.display = 'block';
+            setTimeout(() => {
+                successMessage.style.opacity = '1';
+            }, 10);
+
+            setTimeout(() => {
+                successMessage.classList.add('fade-out');
+                document.querySelector('.container').classList.add('fade-out');
+            }, 2000);
+
+            setTimeout(() => {
+                window.location.href = '/cognitive_test';
+            }, 2500);
+        }
+
+    </script>
+</body>
+
+</html>

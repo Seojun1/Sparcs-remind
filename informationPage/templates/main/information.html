@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>앱 정보 - 위드마크 자리</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4a7c59;
+            --secondary-color: #f0f4f0;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Sans KR', sans-serif;
+            height: 100%;
+            background-color: #f5f5f5;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .header h1 {
+            font-size: 24px;
+            color: var(--primary-color);
+            margin: 0;
+            font-weight: 700;
+        }
+        .content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: start;
+            overflow-y: auto;
+            padding-bottom: 70px;
+        }
+        .info-card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .info-card h2 {
+            font-size: 18px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .info-card h2 span {
+            margin-right: 10px;
+            font-size: 24px;
+        }
+        .info-card p, .info-card ul {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .info-card ul {
+            padding-left: 20px;
+        }
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            border-top: 1px solid #e0e0e0;
+            background-color: #ffffff;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .nav-item {
+            text-align: center;
+            text-decoration: none;
+            color: #666;
+            font-size: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .nav-item span {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+        .nav-item.active {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>앱 정보</h1>
+        </header>
+        
+        <main class="content">
+            <div class="info-card">
+                <h2><span>🌟</span>위드마크 자리란?</h2>
+                <p>위드마크 자리는 당신의 소중한 기억과 건강을 함께 지키는 동반자입니다. 일상을 기록하고 건강을 관리하며, 행복한 순간들을 오래도록 간직할 수 있도록 도와드립니다.</p>
+            </div>
+            
+            <div class="info-card">
+                <h2><span>🎯</span>주요 기능</h2>
+                <ul>
+                    <li>일일 사진 및 일기 기록</li>
+                    <li>인공지능 기반 건강 상태 모니터링</li>
+                    <li>맞춤형 건강 조언 제공</li>
+                    <li>가족과의 소중한 순간 공유</li>
+                    <li>월간/연간 건강 리포트 생성</li>
+                </ul>
+            </div>
+            
+            <div class="info-card">
+                <h2><span>💡</span>사용 팁</h2>
+                <ul>
+                    <li>매일 같은 시간에 기록하는 습관을 들이세요.</li>
+                    <li>가족들과 함께 사용하면 더욱 효과적입니다.</li>
+                    <li>정기적으로 건강 리포트를 확인하세요.</li>
+                    <li>궁금한 점은 언제든 고객센터에 문의해주세요.</li>
+                </ul>
+            </div>
+            
+            <div class="info-card">
+                <h2><span>📞</span>고객 지원</h2>
+                <p>위드마크 자리 팀은 언제나 여러분 곁에 있습니다.</p>
+                <p>이메일: support@widmark.com<br>
+                   전화: 02-123-4567<br>
+                   운영시간: 평일 09:00 - 18:00</p>
+            </div>
+            
+            <div class="info-card">
+                <h2><span>🔐</span>개인정보 보호</h2>
+                <p>귀하의 개인정보와 데이터는 철저히 보호됩니다. 자세한 내용은 개인정보 처리방침을 참조해주세요.</p>
+            </div>
+        </main>
+        
+        <nav class="bottom-nav">
+            <a href="{% url 'homePage' %}" class="nav-item">
+                <span>🏠</span>홈
+            </a>
+            <a href="{% url 'uploadPage' %}" class="nav-item">
+                <span>✏️</span>기록
+            </a>
+            <a href="{% url 'information' %}" class="nav-item active">
+                <span>ℹ️</span>정보
+            </a>
+        </nav>
+    </div>
+</body>
+</html>

@@ -1,0 +1,653 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>위드마크 자리</title>
+    <style>
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            font-family: 'Arial', sans-serif;
+            height: 100%;
+            background-color: white;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .header {
+            background-color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .header h1 {
+            font-size: 18px;
+            color: #333;
+            margin: 0;
+        }
+
+        .notification-icon {
+            color: #4a7c59;
+            font-size: 20px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .doctor-image {
+            width: 70%;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            width: 100%;
+            font-size: 20px;
+            margin-bottom: 30px;
+            line-height: 1.4;
+            color: #333;
+            text-align: left;
+            font-weight: bold;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .grid-item {
+            background-color: #f5f5f5;
+            border-radius: 10px;
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 30px;
+            color: #4a7c59;
+            cursor: pointer;
+        }
+
+        .bottom-nav {
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        .nav-item {
+            text-align: center;
+            text-decoration: none;
+            color: #333;
+            font-size: 12px;
+        }
+
+        .nav-item span {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #imagePreview {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+
+        .image-upload-btn {
+            background-color: #4a7c59;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .daily-record {
+            background-color: white;
+            padding: 20px;
+        }
+
+        .back-button {
+            font-size: 24px;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .image-upload {
+            width: 100%;
+            aspect-ratio: 1;
+            border: 2px solid #4a7c59;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            color: #4a7c59;
+            margin-bottom: 20px;
+        }
+
+        .description {
+            width: 100%;
+            border: 2px solid #4a7c59;
+            border-radius: 15px;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+
+        .description p {
+            margin: 0 0 10px 0;
+            color: #666;
+        }
+
+        .description textarea {
+            width: 100%;
+            height: 100px;
+            border: none;
+            resize: none;
+            font-size: 16px;
+            line-height: 1.5;
+            outline: none;
+        }
+
+        .image-preview {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        #dailyReportPage {
+            background-color: white;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        #uploadedImagesContainer {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #uploadedImagesContainer img {
+            width: 45%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .calendar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .calendar-day {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #ddd;
+            font-size: 12px;
+        }
+
+        #dailyReportPage {
+            background-color: white;
+            transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+            opacity: 0;
+            transform: translateY(100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        #dailyReportPage.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .report-header {
+            padding: 20px;
+            font-size: 18px;
+            font-weight: bold;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .report-content {
+            padding: 20px;
+        }
+
+        .doctor-image {
+            width: 50%;
+            margin: 20px auto;
+            display: block;
+        }
+
+        .report-text {
+            font-size: 16px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .calendar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+            margin-top: 20px;
+        }
+
+        .calendar-day {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #ddd;
+            font-size: 12px;
+        }
+
+        .next-button {
+            background-color: #4a7c59;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mainPage" class="page">
+        <div class="container">
+            <header class="header">
+                <h1>위드마크 자리</h1>
+                <div class="notification-icon">🔔</div>
+            </header>
+
+            <main class="content">
+                <p class="message">{{ user_info.username }}님,<br>오늘 하루를<br>사진으로 기록해주세요!</p>
+                <img src="{% static 'image/doctor.png' %}" alt="Doctor" class="doctor-image">
+                <div class="grid" id="imageGrid">
+                    <div class="grid-item" onclick="showDailyRecord()">+</div>
+                    <div class="grid-item" onclick="showDailyRecord()">+</div>
+                    <div class="grid-item" onclick="showDailyRecord()">+</div>
+                    <div class="grid-item" onclick="showDailyRecord()">+</div>
+                </div>
+            </main>
+
+            <nav class="bottom-nav">
+                <a href="{% url 'homePage' %}" class="nav-item">
+                    <span>🏠</span>홈
+                </a>
+                <a href="#" class="nav-item">
+                    <span>✏️</span>기록
+                </a>
+                <a href="{% url 'information' %}" class="nav-item">
+                    <span>ℹ️</span>정보
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <div id="dailyRecordPage" class="page hidden">
+        <div class="container daily-record">
+            <header class="header">
+                <a href="#" class="back-button" onclick="showMainPage()">←</a>
+                <h1>일상 기록</h1>
+                <span onclick="saveRecord()" style="cursor:pointer;">완료</span>
+            </header>
+
+            <main class="content">
+                <h2 class="title">
+                    <div
+                        style="color: rgba(41, 122, 82, 0.88); font-size: 26px; font-family: Pretendard; font-weight: 600; line-height: 34px; word-wrap: break-word">
+                        사진이 어떤 추억을 담고 있나요?</div>
+                </h2>
+                <div class="image-upload" onclick="uploadImage()">
+                    +
+                </div>
+                <div class="description">
+                    <p>사진에 담긴 일상에 대해 육하원칙으로 <br>묘사해주세요.</p>
+                    <textarea placeholder="여기에 입력하세요..." id="userText"></textarea>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div id="dailyReportPage" class="page">
+        <div class="container">
+            <header class="report-header">
+                <a href="#" class="back-button" onclick="showMainPage()">←</a>
+            </header>
+            <main class="report-content">
+                <span>2024년 10월 20일 일요일</span>
+                <h2>{{ user_info.username }}님의 오늘 하루 리포트</h2>
+                <img src="{% static 'image/doctor.png' %}" alt="Doctor" class="doctor-image">
+                <p class="report-text">오늘 {{ user_info.username }}님의 하루는 아래와 같이 진행됐어요!</p>
+                <p class="report-text">{{ user_info.username }}님의 답변을 돌아보며 통해 오늘 하루를 회상해보세요!</p>
+                <div id="reportText"></div>
+            </main>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-analytics.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-storage.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: apiKey,
+            authDomain: authDomain,
+            projectId: projectId,
+            storageBucket: storageBucket,
+            messagingSenderId: messagingSenderId,
+            appId: appId,
+            measurementId: measurementId
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const storage = getStorage(app);
+
+        let uploadedImages = [];
+        let imageUploadCount = 0;
+
+        window.showDailyRecord = function () {
+            document.getElementById('mainPage').classList.add('hidden');
+            document.getElementById('dailyRecordPage').classList.remove('hidden');
+            // Reset the image upload area and description
+            document.querySelector('.image-upload').innerHTML = '+';
+            document.querySelector('.description textarea').value = '';
+        };
+
+        window.showMainPage = function () {
+            document.getElementById('dailyRecordPage').classList.add('hidden');
+            document.getElementById('dailyReportPage').classList.remove('visible');
+            document.getElementById('mainPage').classList.remove('hidden');
+            displayUploadedImages();
+        };
+
+        window.uploadImage = function () {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = function (event) {
+                const file = event.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'image-preview';
+                    document.querySelector('.image-upload').innerHTML = '';
+                    document.querySelector('.image-upload').appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        };
+
+        window.saveRecord = function () {
+            const imageUpload = document.querySelector('.image-upload img');
+            const description = document.getElementById('userText').value;
+
+            if (!imageUpload) {
+                alert('이미지를 선택해주세요.');
+                return;
+            }
+
+            const fileName = `daily_record_${Date.now()}.png`;
+            const storageRef = ref(storage, `daily_records/${fileName}`);
+
+            fetch(imageUpload.src)
+                .then(res => res.blob())
+                .then(blob => {
+                    uploadBytes(storageRef, blob).then(snapshot => {
+                        getDownloadURL(snapshot.ref).then(downloadURL => {
+                            console.log('File available at', downloadURL);
+                            const timestamp = Date.now();
+                            uploadedImages.push({ url: downloadURL, timestamp: timestamp, description: description });
+                            localStorage.setItem('uploadedImages', JSON.stringify(uploadedImages));
+                            sendToServer(downloadURL, description);
+
+                            imageUploadCount++;
+                            if (imageUploadCount === 4) {
+                                showDailyReport();
+                            } else {
+                                showMainPage();
+                            }
+                        });
+                    });
+                })
+                .catch(error => {
+                    console.error('Error uploading image:', error);
+                    alert('이미지 업로드 중 오류가 발생했습니다.');
+                });
+        };
+
+        function showDailyReport() {
+            document.getElementById('dailyRecordPage').classList.add('hidden');
+            document.getElementById('mainPage').classList.add('hidden');
+            const dailyReportPage = document.getElementById('dailyReportPage');
+            if (!dailyReportPage) {
+                console.error('Daily report page not found');
+                return;
+            }
+            dailyReportPage.classList.add('visible');
+
+            // Set report date
+            const reportDateElement = document.getElementById('reportDate');
+            if (reportDateElement) {
+                const today = new Date();
+                reportDateElement.textContent = `${today.getFullYear()}년 ${today.getMonth() + 1}월 ${today.getDate()}일 ${getDayOfWeek(today.getDay())}요일`;
+            }
+
+            // Set report title
+            const reportTitleElement = document.getElementById('reportTitle');
+            if (reportTitleElement) {
+                reportTitleElement.textContent = `영숙님의 오늘 하루 리포트`;
+            }
+
+            // Generate report text
+            const reportText = generateReportText();
+            const reportTextElement = document.getElementById('reportText');
+            if (reportTextElement) {
+                reportTextElement.innerHTML = reportText;
+            }
+
+            // Display uploaded images
+            const uploadedImagesContainer = document.getElementById('uploadedImagesContainer');
+            if (uploadedImagesContainer) {
+                uploadedImagesContainer.innerHTML = '';
+                uploadedImages.forEach(image => {
+                    const img = document.createElement('img');
+                    img.src = image.url;
+                    uploadedImagesContainer.appendChild(img);
+                });
+            }
+
+            // Populate calendar
+            const calendar = document.querySelector('.calendar');
+            if (calendar) {
+                calendar.innerHTML = '';
+                for (let i = 1; i <= 31; i++) {
+                    const day = document.createElement('div');
+                    day.className = 'calendar-day';
+                    day.textContent = i;
+                    calendar.appendChild(day);
+                }
+            }
+        }
+        function sendToServer(downloadURL, description) {
+            fetch('{% url "uploadPage" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({
+                    image_url: downloadURL,
+                    description: description
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Show alert regardless of success or failure
+                    alert('저장 되었습니다!');
+
+                    // Optionally handle response for debugging or logging
+                    if (data.success) {
+                        console.log('Successfully saved:', data);
+                    } else {
+                        console.error('Save failed:', data.error || '알 수 없는 오류');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('저장 중 오류가 발생했습니다: ' + error.message);
+                });
+        }
+
+        function displayUploadedImages() {
+            const imageGrid = document.getElementById('imageGrid');
+            imageGrid.innerHTML = ''; // Clear existing grid items
+
+            const currentTime = Date.now();
+            const twentyFourHours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+            // Add saved images to the grid
+            uploadedImages.forEach(image => {
+                // Check if the image is less than 24 hours old
+                if (currentTime - image.timestamp < twentyFourHours) {
+                    const gridItem = document.createElement('div');
+                    gridItem.className = 'grid-item';
+                    const img = document.createElement('img');
+                    img.src = image.url;
+                    img.style.width = '100%'; // Ensure the image fits within the grid item
+                    img.style.maxWidth = '60%';
+                    img.style.borderRadius = '10px'; // Match the grid item's border radius
+                    gridItem.appendChild(img);
+                    imageGrid.appendChild(gridItem);
+                }
+            });
+
+            // Ensure the "+" item is still there
+            if (uploadedImages.length < 4) {
+                const addItem = document.createElement('div');
+                addItem.className = 'grid-item';
+                addItem.onclick = showDailyRecord;
+                addItem.innerHTML = '+';
+                imageGrid.appendChild(addItem);
+            }
+        }
+
+        function generateReportText() {
+            const sentences = [
+                "오늘 하루도 수고 많으셨어요.",
+                "일상의 소중한 순간을 잘 담아내셨네요.",
+                "사진에서 행복한 기운이 느껴집니다.",
+                "오늘의 경험이 좋은 추억으로 남길 바랍니다.",
+                "새로운 도전을 한 것 같아 보여요. 멋집니다!"
+            ];
+
+            let report = "";
+            uploadedImages.forEach((image, index) => {
+                report += `<p>${sentences[index % sentences.length]} ${image.description}</p>`;
+            });
+
+            return report;
+        }
+
+        function getDayOfWeek(day) {
+            const days = ['일', '월', '화', '수', '목', '금', '토'];
+            return days[day];
+        }
+
+        // Display images when the page loads
+        window.onload = function () {
+            displayUploadedImages(); // Load images on page load
+        };
+    </script>
+
+</body>
+
+</html>
