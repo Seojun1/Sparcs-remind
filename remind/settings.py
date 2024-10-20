@@ -98,7 +98,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'sparcsremind',
         'USER': 'root',
-        'PASSWORD': 'password',
+        'PASSWORD': 'seojun0927',
         'HOST': 'localhost',
         'PORT': '',
     }
